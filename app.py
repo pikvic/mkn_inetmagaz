@@ -1,22 +1,32 @@
+import sqlite3
 from flask import Flask, render_template
+
+
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+conn = get_db_connection()
+items = conn.execute('SELECT * FROM items').fetchall()
+conn.close()
+print(items)
 
 app = Flask(__name__)
 
-items = [
-    {"name": "ASDLK", "price": 1233, "description": "jsadklsaksalkjdasjjk dsasa"},
-    {"name": "AdsLK", "price": 532, "description": "jsadklsaksalkjdas32jjk dsasa"},
-    {"name": "asdasDLK", "price": 234, "description": "jsadklsaksalk23jdasjjk dsasa"},
-    {"name": "ASsdaK", "price": 222, "description": "jsadklsaksalkjasddasjjk dsasa"},
-    {"name": "ASDLasdK", "price": 12, "description": "jsadklsaksalkjasddasjjk dsasa"},
-]
 
 @app.get("/")
 def index():
+    conn = get_db_connection()
+    items = conn.execute('SELECT * FROM items').fetchall()
+    conn.close()
     return render_template('index.html', items=items)
 
 @app.get("/items/<name>")
 def get_item(name: str):
-    item = [item for item in items if item["name"] == name]
+    conn = get_db_connection()
+    item = conn.execute('SELECT * FROM items WHERE name=?', (name,)).fetchone()
+    conn.close()
     if not item:
         return 404, "Not Found"
-    return render_template('item.html', item=item[0])
+    return render_template('item.html', item=item)
