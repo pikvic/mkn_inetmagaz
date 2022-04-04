@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Inet Magaz Main Page
+{% endblock title %}
+
+{% block content %}
+    <h1>INET MAGAZ #1 CASINO</h1>
+    <h3>Items:</h3>
+    <ul>
+        {% for item in items %}
+            <li><a href="{{ url_for('get_item', name=item.name)}}">{{ item.name }} - {{ item.price }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock content %}
